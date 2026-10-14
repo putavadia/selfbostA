@@ -1,42 +1,55 @@
-# language: Python 3, file: selfbot_bump.py, target: Cross-platform
-# *executa o slash command /bump do Disboard periodicamente usando token de usuario (selfbot)*
+# language: Python 3, file: main.py, target: Railway Worker
+# *selfbot com ativacao via comando de chat !bump*
 
+import os
 import asyncio
 import discord
-from discord.ext import commands, tasks
+from discord.ext import tasks
 
-# Requer instalacao previa: pip install discord.py-self
-TOKEN = "MTU1NjA0OTI4NzYzOTYwMTE5Ng.GeEUJW.-LETLZ6MppRyLhYChi-_rrfadAWFvWBg0hVcG4"
-CHANNEL_ID = 1551783089389445271  # ID do canal onde o comando sera disparado
-DISBOARD_ID = 302050872383242240  # ID oficial do Disboard
+TOKEN = os.getenv("DISCORD_TOKEN")
+CHANNEL_ID = int(os.getenv("CHANNEL_ID", "0"))
+DISBOARD_ID = 302050872383242240
 
-bot = commands.Bot(command_prefix="!", self_bot=True)
+bot = discord.Client(self_bot=True)
 
 @tasks.loop(hours=2)
 async def auto_bump():
-    await bot.wait_until_ready()
     channel = bot.get_channel(CHANNEL_ID)
     if not channel:
         print("[-] Canal nao encontrado.")
         return
     
     try:
-        # Busca os comandos disponiveis no canal e filtra o /bump do Disboard
         commands_list = await channel.application_commands()
         bump_cmd = next((cmd for cmd in commands_list if cmd.name == "bump" and cmd.application_id == DISBOARD_ID), None)
         
         if bump_cmd:
             await bump_cmd.__call__(channel=channel)
-            print("[+] /bump executado com sucesso pelo selfbot.")
+            print("[+] /bump executado automaticamente.")
         else:
             print("[-] Comando /bump do Disboard nao visivel neste canal.")
     except Exception as e:
         print(f"[-] Erro na execucao do bump: {e}")
 
 @bot.event
-async def on_ready():
-    print(f"[*] Conectado como {bot.user} (Selfbot ativo).")
-    if not auto_bump.is_running():
-        auto_bump.start()
+async def on_message(message):
+    # Garante que o comando so responde a mensagens enviadas por voce mesmo no chat
+    if message.author.id == bot.user.id and message.content.strip() == "!bump":
+        if message.channel.id == CHANNEL_ID:
+            await message.delete() # Opcional: apaga a sua mensagem "!bump"
+            print("[*] Comando !bump recebido. Disparando ciclo de auto-bump...")
+            if not auto_bump.is_running():
+                auto_bump.start()
+                await message.channel.send("[+] Auto-bump ativado com sucesso! Ciclo de 2 horas iniciado.", delete_after=5)
+            else:
+                await message.channel.send("[!] O auto-bump ja esta rodando.", delete_after=5)
 
-bot.run(TOKEN)
+@bot.event
+async def on_ready():
+    print(f"[*] Conectado como {bot.user}. Digite '!bump' no canal configurado para iniciar o ciclo.")
+
+if __name__ == "__main__":
+    if not TOKEN:
+        print("[-] Erro: Variavel DISCORD_TOKEN nao configurada.")
+        exit(1)
+    bot.run(TOKEN)
