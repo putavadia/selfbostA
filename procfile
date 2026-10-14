@@ -1,1 +1,6 @@
-worker: python selfbot_bump.py
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "deploy": {
+    "startCommand": "python main.py"
+  }
+}
