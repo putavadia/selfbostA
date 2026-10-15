@@ -1,5 +1,5 @@
 # language: Python 3, file: main.py, target: Railway Worker
-# *selfbot permitindo que contas autorizadas acionem o !bump*
+# *selfbot limpo com multiconte e delay aleatorio dentro da tarefa assincrona*
 
 import os
 import asyncio
@@ -12,11 +12,9 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID", "0"))
 DISBOARD_ID = 302050872383242240
 
-# Lista de IDs de usuários autorizados a digitar !bump (substitua ou adicione IDs)
-# Deixe vazio ou adicione o ID da outra conta em formato inteiro (int)
+# IDs das contas autorizadas a disparar o comando !bump
 AUTHORIZED_USERS = [
-    # SEU_PROPRIO_ID_AQUI,
-    # ID_DA_OUTRA_CONTA_AQUI
+    # Adicione IDs extras aqui se necessario, ex: 123456789012345678
 ]
 
 bot = discord.Client(self_bot=True)
@@ -28,6 +26,7 @@ async def auto_bump():
         print("[-] Canal nao encontrado.")
         return
     
+    # Delay aleatorio entre 5 (300s) e 10 minutos (600s) estritamente dentro da funcao async
     delay_extra = random.randint(300, 600)
     delay_minutos = delay_extra // 60
     print(f"[*] Aguardando {delay_minutos} minutos ({delay_extra} segundos) de delay aleatorio...")
@@ -48,7 +47,6 @@ async def auto_bump():
 @bot.event
 async def on_message(message):
     if message.content.strip() == "!bump" and message.channel.id == CHANNEL_ID:
-        # Verifica se quem mandou e voce mesmo OU esta na lista de autorizados
         is_owner = message.author.id == bot.user.id
         is_authorized = message.author.id in AUTHORIZED_USERS
         
