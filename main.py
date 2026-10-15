@@ -12,6 +12,11 @@ DISBOARD_ID = 302050872383242240
 
 bot = discord.Client(self_bot=True)
 
+delay_extra = random.randint(300, 600)
+delay_minutos = delay_extra // 60
+print(f"[*] Aguardando {delay_minutos} minutos ({delay_extra} segundos) de delay aleatorio...")
+await asyncio.sleep(delay_extra)
+
 @tasks.loop(hours=2)
 async def auto_bump():
     channel = bot.get_channel(CHANNEL_ID)
