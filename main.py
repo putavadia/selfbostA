@@ -13,9 +13,8 @@ CHANNEL_ID = int(os.getenv("CHANNEL_ID", "0"))
 DISBOARD_ID = 302050872383242240
 
 # IDs das contas autorizadas a disparar comandos (!bump, !rbump, !ping) de qualquer conta
-AUTHORIZED_USERS = [ 1544934280256299050
-    # Adicione os IDs das contas permitidas aqui, exemplo:
-    # 1544934280256299050
+AUTHORIZED_USERS = [ 
+    1544934280256299050
 ]
 
 bot = discord.Client(self_bot=True)
@@ -72,7 +71,7 @@ async def on_message(message):
             else:
                 await message.channel.send("[!] O ciclo já está em execução.", delete_after=5)
 
-        # 2. Comando !rbump (Reinicia o ciclo do auto-bump com segurança)
+        # 2. Comando !rbump (Reinicia o ciclo do auto-bump)
         elif content == "!rbump":
             try:
                 await message.delete()
@@ -80,7 +79,6 @@ async def on_message(message):
                 pass
             
             print(f"[*] Comando !rbump (reiniciar) acionado por {message.author} (ID: {message.author.id}).")
-            
             if auto_bump.is_running():
                 auto_bump.cancel()
             
