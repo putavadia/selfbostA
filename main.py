@@ -13,7 +13,7 @@ CHANNEL_ID = int(os.getenv("CHANNEL_ID", "0"))
 DISBOARD_ID = 302050872383242240
 
 # IDs das contas autorizadas a disparar comandos (!bump, !rbump, !ping) de qualquer conta
-AUTHORIZED_USERS = [
+AUTHORIZED_USERS = [ 1544934280256299050
     # Adicione os IDs das contas permitidas aqui, exemplo:
     # 1544934280256299050
 ]
