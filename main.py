@@ -41,10 +41,12 @@ async def auto_bump():
         print("[-] Canal não encontrado.")
         return
     
-    delay_extra = random.randint(60, 180)
-    delay_minutos = delay_extra // 60
-    print(f"[*] Aguardando {delay_minutos} minuto(s) ({delay_extra} segundos) de delay aleatório...")
-    await asyncio.sleep(delay_extra)
+    # Delay fixo de 5 minutos (convertido para segundos para o asyncio.sleep)
+    delay_minutos = 5
+    delay_segundos = delay_minutos * 60
+    
+    print(f"[*] Aguardando o delay fixo de {delay_minutos} minuto(s)...")
+    await asyncio.sleep(delay_segundos)
     
     await executar_bump(channel)
 
